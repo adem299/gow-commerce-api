@@ -64,6 +64,8 @@ func (h *Handler) CreateOrder(c *gin.Context) {
 		return
 	}
 
+	go h.NotifService.SendOrderConfirmation(currentUser, newOrder)
+
 	c.JSON(http.StatusCreated, gin.H{
 		"message":    "Pesanan berhasil dibuat",
 		"order_id":   newOrder.ID,

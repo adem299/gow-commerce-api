@@ -1,11 +1,18 @@
 package handlers
 
-import "gorm.io/gorm"
+import (
+	"github.com/adem299/gow-commerce.git/services"
+	"gorm.io/gorm"
+)
 
 type Handler struct {
-	DB *gorm.DB
+	DB           *gorm.DB
+	NotifService services.NotificationService
 }
 
-func NewHandler(db *gorm.DB) *Handler {
-	return &Handler{DB: db}
+func NewHandler(db *gorm.DB, notifService services.NotificationService) *Handler {
+	return &Handler{
+		DB:           db,
+		NotifService: notifService,
+	}
 }

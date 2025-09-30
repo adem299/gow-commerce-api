@@ -14,12 +14,14 @@ import (
 func (h *Handler) Register(c *gin.Context) {
 	var input struct {
 		Username string `json:"username" binding:"required"`
+		Email    string `json:"email" binding:"required"`
 		Password string `json:"password" binding:"required"`
 		Role     string `json:"role" binding:"required,oneof=user admin"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
@@ -30,6 +32,7 @@ func (h *Handler) Register(c *gin.Context) {
 
 	user := models.User{
 		Username: input.Username,
+		Email:    input.Email,
 		Password: string(hashedPassword),
 		Role:     input.Role,
 	}
