@@ -1,7 +1,7 @@
 # Build stage
 FROM golang:1.21 as builder
 
-WORKDIR /app
+WORKDIR /gow-commerce
 
 # Copy go mod and sum files
 COPY go.mod go.sum ./
@@ -13,19 +13,31 @@ RUN go mod download
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .
+RUN CGO_ENABLED=0 GOOS=linux go build -o gow-commerce .
 
 # Final stage
 FROM alpine:latest  
 
-WORKDIR /root/
+# Install CA certificates and tzdata
+RUN apk --no-cache add ca-certificates tzdata
 
-# Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main .
-COPY --from=builder /app/.env .
+# Create a non-root user
+RUN adduser -D -g '' appuser
+
+WORKDIR /home/appuser
+
+# Copy the binary and .env file
+COPY --from=builder /gow-commerce/gow-commerce .
+COPY --from=builder /gow-commerce/.env .
+
+# Set proper permissions
+RUN chown -R appuser:appuser .
+
+# Switch to non-root user
+USER appuser
 
 # Expose port 8080
 EXPOSE 8080
 
 # Command to run the executable
-CMD ["./main"]
+CMD ["./gow-commerce"]
