@@ -4,16 +4,14 @@ import (
 	"github.com/adem299/gow-commerce.git/database"
 	"github.com/adem299/gow-commerce.git/handlers"
 	"github.com/adem299/gow-commerce.git/middleware"
-	"github.com/adem299/gow-commerce.git/services"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	db := database.ConnectDatabase()
-	notificationService := services.NewEmailService()
 
-	h := handlers.NewHandler(db, notificationService)
+	h := handlers.NewHandler(db)
 
 	router := gin.Default()
 
